@@ -17,3 +17,33 @@ def overenie():
     if board[0][0] == board[1][1] == board[2][2] != "" or board[0][2] == board[1][1] == board[2][0] != "":
         return board[1][1]
     return None
+
+
+def remiza():
+    for row in board:
+        for cell in row:
+            if cell == "":
+                return False
+    return True
+
+def zmena_hraca():
+    global hrac_na_tahu
+    hrac_na_tahu = "O" if hrac_na_tahu == "X" else "X"
+
+
+def on_click(row, col):
+   if board[row][col] == "" and not overenie():
+        board[row][col] = hrac_na_tahu
+        buttons[row][col].config(text=hrac_na_tahu)
+        winner = overenie()
+
+
+        if winner:
+            messagebox.showinfo("Koniec hry", f"Vyhráva hráč {winner}!")
+            menu_hry()
+        elif remiza():
+            messagebox.showinfo("Koniec hry", "Je to remíza!")
+            menu_hry()
+        else:
+            zmena_hraca()
+
