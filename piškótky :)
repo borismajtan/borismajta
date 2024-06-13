@@ -62,7 +62,7 @@ class Piškôrky:
 
     def start_game(self):
         self.board = [[None] * 3 for _ in range(3)]
-        self.current_player = "X"
+        self.current_player = "X"                         #vynuluje mi hraciu plochu 
         for widget in self.master.winfo_children():
             widget.destroy()
         self.create_widgets()
