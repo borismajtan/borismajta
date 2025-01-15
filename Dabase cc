@@ -1,5 +1,5 @@
 import sqlite3
-import re 
+
 
 def create_table():
     with sqlite3.connect("example.db") as conn:
