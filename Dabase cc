@@ -1,0 +1,98 @@
+import sqlite3
+import re 
+
+def create_table():
+    with sqlite3.connect("example.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute('''CREATE TABLE IF NOT EXISTS records (
+                          id INTEGER PRIMARY KEY AUTOINCREMENT,
+                          name TEXT NOT NULL,
+                          age INTEGER NOT NULL)''')
+        conn.commit()
+
+def create_record(name, age):
+    with sqlite3.connect("example.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO records (name, age) VALUES (?, ?)", (name, age))
+        conn.commit()
+        return cursor.lastrowid
+
+def read_records(name_filter=None, id_filter=None):
+    with sqlite3.connect("example.db") as conn:
+        cursor = conn.cursor()
+        query = "SELECT * FROM records WHERE 1=1"
+        params = []
+        if name_filter:
+            query += " AND name = ?"
+            params.append(name_filter)
+        if id_filter:
+            query += " AND id = ?"
+            params.append(id_filter)
+        cursor.execute(query, params)
+        results = cursor.fetchall()
+        return results
+
+def update_record(record_id, name=None, age=None):
+    with sqlite3.connect("example.db") as conn:
+        cursor = conn.cursor()
+        if name:
+            cursor.execute("UPDATE records SET name = ? WHERE id = ?", (name, record_id))
+        if age:
+            cursor.execute("UPDATE records SET age = ? WHERE id = ?", (age, record_id))
+        conn.commit()
+
+def delete_record(record_id):
+    with sqlite3.connect("example.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM records WHERE id = ?", (record_id,))
+        conn.commit()
+
+def main():
+    create_table()
+
+    while True:
+        print("\nMenu:")
+        print("1. Create ")
+        print("2. Read ")
+        print("3. Update ")
+        print("4. Delete ")
+        print("5. Exit")
+        choice = input("zadaj svoju moznost: ")
+
+        if choice == "1":           
+            name = input(" name: ")
+            age = int(input(" age: "))
+            record_id = create_record(name, age)
+            print(f"create uspesny : {record_id}.")
+
+        elif choice == "2":
+            name_filter = input(" name (Enter to skip): ")
+            id_filter = input("ID (Enter to skip): ")
+            id_filter = int(id_filter) if id_filter else None
+            results = read_records(name_filter or None, id_filter)
+            print("records:")
+            for record in results:
+                print(record)
+
+        elif choice == "3":
+            record_id = int(input(" ID pre update: "))
+            name = input("name pre update (enter to skip): ")
+            age = input("age pre update ( enter to skip): ")
+            age = int(age) if age else None
+            update_record(record_id, name or None, age)
+            print("update uspesny.")
+
+        elif choice == "4":
+            record_id = int(input("id pre delete: "))
+            delete_record(record_id)
+            print("delete uspesny.")
+
+        elif choice == "5":
+            print("CAues ,prid znova !")
+            break
+
+        else:
+            print("skus este raz.")
+
+if __name__ == "__main__":
+    main()
